@@ -11,6 +11,7 @@
 * [MRI] OpenBSD installation should be a bit easier now. [#1685] (Thanks, @jeremyevans!)
 * [MRI] Cross-built Windows gems now support Ruby 2.5
 * Node#dup supports copying a node directly to a new document. See the method documentation for details.
+* [MRI] DocumentFragment#dup is now more memory-efficient, avoiding making unnecessary copies. [#1063]
 
 
 ## Bug fixes
