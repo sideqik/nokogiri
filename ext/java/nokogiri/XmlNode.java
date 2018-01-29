@@ -943,32 +943,54 @@ public class XmlNode extends RubyObject {
     }
 
     public IRubyObject dup() {
-        return dup_implementation(getMetaClass().getClassRuntime(), true);
+        return dup_implementation(getMetaClass().getClassRuntime(), true, null);
     }
 
-    @JRubyMethod
-    public IRubyObject dup(ThreadContext context) {
-        return dup_implementation(context, true);
-    }
+    @JRubyMethod(required=0, optional=2)
+    public IRubyObject dup(ThreadContext context, IRubyObject[] argv) {
+        boolean deep = true;
+        Document document = null;
 
-    @JRubyMethod
-    public IRubyObject dup(ThreadContext context, IRubyObject depth) {
-        boolean deep = depth instanceof RubyInteger && RubyFixnum.fix2int(depth) != 0;
-        return dup_implementation(context, deep);
+        if (argv.length >= 1) {
+            deep = RubyFixnum.fix2int(argv[0]) != 0;
+        }
+
+        if (argv.length >= 2) {
+            document = asXmlNode(context, argv[1]).getOwnerDocument();
+        }
+
+        IRubyObject node = dup_implementation(context, deep, document);
+
+        if (argv.length >= 2) {
+            asXmlNode(context, node).setDocument(context, argv[1]);
+        }
+
+        return node;
     }
 
     protected final IRubyObject dup_implementation(ThreadContext context, boolean deep) {
-       return dup_implementation(context.getRuntime(), deep);
+        return dup_implementation(context.getRuntime(), deep, null);
     }
 
-    protected IRubyObject dup_implementation(Ruby runtime, boolean deep) {
+    protected final IRubyObject dup_implementation(ThreadContext context, boolean deep, Document newParentDoc) {
+        return dup_implementation(context.getRuntime(), deep, newParentDoc);
+    }
+
+    protected IRubyObject dup_implementation(Ruby runtime, boolean deep, Document newParentDoc) {
         XmlNode clone;
         try {
             clone = (XmlNode) clone();
         } catch (CloneNotSupportedException e) {
             throw runtime.newRuntimeError(e.toString());
         }
-        Node newNode = node.cloneNode(deep);
+
+        Node newNode;
+        if (newParentDoc == null) {
+            newNode = node.cloneNode(deep);
+        } else {
+            newNode = newParentDoc.importNode(node, deep);
+        }
+
         clone.node = newNode;
         return clone;
     }
