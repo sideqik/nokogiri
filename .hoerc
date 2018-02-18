@@ -1,0 +1,3 @@
+exclude: !ruby/regexp /tmp$|CVS|TAGS|\.(svn|git|DS_Store)|ports|test|gems|concourse|\.log$/
+
+
