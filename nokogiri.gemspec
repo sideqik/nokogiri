@@ -4,7 +4,6 @@
 Gem::Specification.new do |s|
   s.name = "nokogiri".freeze
   s.version = "1.8.4.20180905155605"
-  s.platform = "java".freeze
 
   s.required_rubygems_version = Gem::Requirement.new(">= 0".freeze) if s.respond_to? :required_rubygems_version=
   s.require_paths = ["lib".freeze]
